@@ -2,6 +2,7 @@ import os
 import json
 import requests
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 URL = "https://www.justeat.it/en/courier/form?city=genoa&page=city"
 
@@ -120,7 +121,15 @@ def get_genoa_vehicle_options():
         raise RuntimeError(
             "Could not find Vehicle Selection for Genoa."
         )
+    rome_now = datetime.now(ZoneInfo("Europe/Rome"))
 
+    if not (8 <= rome_now.hour < 20):
+        print(
+            f"Outside monitoring hours "
+            f"(Rome time: {rome_now.strftime('%H:%M:%S')})."
+        )
+        print("No request sent to Just Eat.")
+        raise SystemExit(0)
     options = vehicle_question.get("options")
 
     if not isinstance(options, dict):
