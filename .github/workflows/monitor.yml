@@ -32,6 +32,7 @@ jobs:
           do
             echo "======================================"
             echo "Check $i of 8"
+
             python github_monitor.py
 
             if [ "$i" -lt 8 ]; then
