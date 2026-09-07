@@ -9,7 +9,10 @@ BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
 BIKE_OPTIONS = [
-    "Driver Scooter",
+    "Driver Bike",
+    "Driver E-Bike",
+    "Company Bike",
+    "Company E-Bike",
 ]
 
 
