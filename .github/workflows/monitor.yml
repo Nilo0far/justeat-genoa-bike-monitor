@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: "17 * * * *"
+    - cron: "7 * * * *"
 
 jobs:
   check-bike:
@@ -23,19 +23,19 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Check Just Eat every 5 minutes
+      - name: Check Just Eat every 7.5 minutes
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          for i in {1..12}
+          for i in {1..8}
           do
             echo "======================================"
-            echo "Check $i of 12"
+            echo "Check $i of 8"
             python github_monitor.py
 
-            if [ "$i" -lt 12 ]; then
-              echo "Waiting 5 minutes..."
-              sleep 300
+            if [ "$i" -lt 8 ]; then
+              echo "Waiting 7.5 minutes..."
+              sleep 450
             fi
           done
