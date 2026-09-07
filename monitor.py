@@ -9,10 +9,9 @@ CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
 BIKE_WORDS = [
     "bike",
+    "e-bike",
     "bicycle",
     "bicicletta",
-    "own bike",
-    "own bicycle",
 ]
 
 
@@ -37,14 +36,25 @@ def check_justeat():
 
         page.goto(URL, wait_until="networkidle", timeout=60000)
 
-        body_text = page.locator("body").inner_text().lower()
+        # فقط عناصر clickable / button را می‌خوانیم
+        elements = page.locator("button, [role='button']")
 
-        print("Current page:")
-        print(page.url)
-        print("----- PAGE TEXT -----")
-        print(body_text[:6000])
+        texts = []
 
-        bike_found = any(word in body_text for word in BIKE_WORDS)
+        for i in range(elements.count()):
+            text = elements.nth(i).inner_text().strip().lower()
+
+            if text:
+                texts.append(text)
+
+        print("Clickable options found:")
+        for text in texts:
+            print("-", text)
+
+        bike_found = any(
+            any(word in text for word in BIKE_WORDS)
+            for text in texts
+        )
 
         browser.close()
 
@@ -58,12 +68,12 @@ if __name__ == "__main__":
         if available:
             send_telegram(
                 "🚨 JUST EAT GENOVA ALERT 🚲\n\n"
-                "Bike / Bicycle appears to be available!\n\n"
-                "Check the Just Eat rider application NOW:\n"
+                "Bike / E-bike option appears to be AVAILABLE!\n\n"
+                "Check the application now:\n"
                 "https://www.justeat.it/en/courier/form?city=genoa&page=city"
             )
         else:
-            print("Bike option not found.")
+            print("Bike option NOT found.")
 
     except Exception as e:
         print("ERROR:", e)
