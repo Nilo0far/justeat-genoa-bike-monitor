@@ -36,24 +36,36 @@ def check_justeat():
 
         page.goto(URL, wait_until="networkidle", timeout=60000)
 
-        # فقط عناصر clickable / button را می‌خوانیم
-        elements = page.locator("button, [role='button']")
+        vehicle_inputs = page.locator('input[name="vehicle_type"]')
 
-        texts = []
+        vehicles = []
 
-        for i in range(elements.count()):
-            text = elements.nth(i).inner_text().strip().lower()
+        for i in range(vehicle_inputs.count()):
+            el = vehicle_inputs.nth(i)
 
-            if text:
-                texts.append(text)
+            value = (el.get_attribute("value") or "").strip().lower()
 
-        print("Clickable options found:")
-        for text in texts:
-            print("-", text)
+            label_text = el.locator("xpath=ancestor::label").inner_text().strip().lower()
+
+            vehicles.append({
+                "value": value,
+                "label": label_text
+            })
+
+        print("Vehicle options found:")
+
+        for vehicle in vehicles:
+            print(
+                f"- value={vehicle['value']} | label={vehicle['label']}"
+            )
 
         bike_found = any(
-            any(word in text for word in BIKE_WORDS)
-            for text in texts
+            any(
+                word in vehicle["value"]
+                or word in vehicle["label"]
+                for word in BIKE_WORDS
+            )
+            for vehicle in vehicles
         )
 
         browser.close()
@@ -68,8 +80,8 @@ if __name__ == "__main__":
         if available:
             send_telegram(
                 "🚨 JUST EAT GENOVA ALERT 🚲\n\n"
-                "Bike / E-bike option appears to be AVAILABLE!\n\n"
-                "Check the application now:\n"
+                "Bike / E-bike option is AVAILABLE!\n\n"
+                "Apply now:\n"
                 "https://www.justeat.it/en/courier/form?city=genoa&page=city"
             )
         else:
