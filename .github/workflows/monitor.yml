@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: "2-59/5 * * * *"
+    - cron: "17 * * * *"
 
 jobs:
   check-bike:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 70
 
     steps:
       - name: Checkout repository
@@ -23,8 +23,19 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Check Just Eat
+      - name: Check Just Eat every 5 minutes
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python github_monitor.py
+        run: |
+          for i in {1..12}
+          do
+            echo "======================================"
+            echo "Check $i of 12"
+            python github_monitor.py
+
+            if [ "$i" -lt 12 ]; then
+              echo "Waiting 5 minutes..."
+              sleep 300
+            fi
+          done
